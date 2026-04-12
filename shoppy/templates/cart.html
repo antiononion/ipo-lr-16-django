@@ -1,0 +1,50 @@
+<h1>Ваша корзина</h1>
+
+{% if elements %}
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid #ccc;">
+                <th>Товар</th>
+                <th>Количество</th>
+                <th>Цена за шт.</th>
+                <th>Итого</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in elements %}
+            <tr style="border-bottom: 1px solid #eee; text-align: center;">
+                <td>{{ item.product.title }}</td>
+                
+                <td>
+                    <!-- Форма обновления количества -->
+                    <form action="{% url 'cart_update' item.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="number" name="number" value="{{ item.number }}" min="1" 
+                               max="{{ item.product.numberOF }}" style="width: 50px;">
+                        <button type="submit" title="Обновить">🔄</button>
+                    </form>
+                </td>
+                
+                <td>{{ item.product.price }} руб.</td>
+                <td>{{ item.cost }} руб.</td> <!-- Твой метод cost из модели -->
+                
+                <td>
+                    <a href="{% url 'cart_remove' item.id %}" 
+                       onclick="return confirm('Удалить товар?')" 
+                       style="color: red; text-decoration: none;">❌ Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 20px; text-align: right;">
+        <h2>Общая сумма: {{ total_price }} руб.</h2>
+        <a href="{% url 'catalog' %}" class="btn">Продолжить покупки</a>
+        <button class="btn" style="background: #007bff;">Оформить заказ</button>
+    </div>
+
+{% else %}
+    <p>Корзина пуста. <a href="{% url 'catalog' %}">Перейти в каталог</a></p>
+{% endif %}

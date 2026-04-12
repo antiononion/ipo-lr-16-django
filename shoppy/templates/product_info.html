@@ -1,0 +1,37 @@
+<div style="max-width: 800px; margin: 0 auto; font-family: sans-serif;">
+    <a href="{% url 'catalog' %}">← Назад в каталог</a>
+    
+    <div style="display: flex; gap: 30px; margin-top: 20px;">
+        <div style="flex: 1;">
+            {% if product.photo %}
+                <img src="{{ product.photo.url }}" style="width: 100%; border-radius: 10px;">
+            {% endif %}
+        </div>
+        
+        <div style="flex: 1;">
+            <h1>{{ product.title }}</h1>
+            <p><strong>Категория:</strong> {{ product.category }}</p>
+            <p><strong>Продавец:</strong> {{ product.owner }}</p>
+            <h2 style="color: #28a745;">{{ product.price }} руб.</h2>
+            
+            <h3>Описание:</h3>
+            <p>{{ product.description }}</p>
+            
+            <p><em>Осталось на складе: {{ product.numberOF }} шт.</em></p>
+            <hr>
+
+            {% if product.numberOF > 0 %}
+                <!-- Кнопка добавления в корзину -->
+                <a href="{% url 'cart_add' product_id=product.id %}" 
+                   style="display: inline-block; padding: 15px 30px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; text-align: center;">
+                    Добавить в корзину
+                </a>
+            {% else %}
+                <!-- Кнопка, если товара нет -->
+                <button disabled style="padding: 15px 30px; background: #ccc; color: #666; border: none; border-radius: 5px; cursor: not-allowed;">
+                    Нет в наличии
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>

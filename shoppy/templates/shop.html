@@ -2,77 +2,94 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Магазин</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <title>Наш магазин</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #355c4d, #6fbf92);
-            color: white;
-            text-align: center;
-        }
 
-        .container {
-            padding: 60px 20px;
-        }
-
-        h1 {
-            font-size: 38px;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 18px;
-            max-width: 700px;
-            margin: 15px auto;
-            line-height: 1.6;
-        }
-
-        .info-box {
-            background: rgba(255, 255, 255, 0.15);
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
             padding: 20px;
+        }
+        .card {
+            border: 1px solid #eee;
             border-radius: 10px;
-            margin-top: 20px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        a {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 10px 20px;
-            background: white;
-            color: #355c4d;
+        .price { color: #28a745; font-weight: bold; font-size: 1.2em; }
+        .out-of-stock { color: red; font-weight: bold; }
+        .btn {
+            display: block;
+            background: #333;
+            color: white;
+            padding: 10px;
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
+            margin-top: 10px;
+            border-radius: 5px;
         }
 
-        a:hover {
-            background: #e6e6e6;
+
+        .filters {
+            background: #f4f4f4;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .filters input, .filters select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Раздел магазина</h1>
+<h1>Каталог товаров</h1>
 
-    <div class="info-box">
-        <p><strong>Создание и базовая настройка приложений Django:</strong></p>
-        <p>
-            Django — это Python-фреймворк для веб-разработки. 
-            Сначала создаётся проект командой <code>django-admin startproject</code>, 
-            затем приложение через <code>python manage.py startapp</code>.
-        </p>
-        <p>
-            После этого приложение добавляется в <code>INSTALLED_APPS</code>, 
-            настраиваются модели, представления (views) и маршруты (urls).
-        </p>
-    </div>
+<!-- Блок фильтрации -->
+<div class="filters">
+    <form method="GET" action="">
+        <input type="text" name="search" placeholder="Поиск по названию..." value="{{ request.GET.search }}">
+        
+        <select name="category">
+            <option value="">Все категории</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"i" %}selected{% endif %}>
+                    {{ cat.name }}
+                </option>
+            {% endfor %}
+        </select>
 
-    <a href="..">Назад на главную</a>
+        <button type="submit" class="btn" style="display: inline-block; margin: 0;">Применить</button>
+        <a href="?" style="margin-left: 10px; text-decoration: none; color: #666;">Сбросить</a>
+    </form>
 </div>
+
+<div class="product-grid">
+    {% for product in products %}
+    <div class="card">
+        <h3>{{ product.title }}</h3>
+        <p class="price">{{ product.price }} руб.</p>
+        
+        {% if product.numberOF > 0 %}
+            <p>В наличии: {{ product.numberOF }} шт.</p>
+        {% else %}
+            <p class="out-of-stock">Нет в наличии</p>
+        {% endif %}
+
+        <a href="{% url 'product_info' pk=product.pk %}" class="btn">Подробнее</a>
+    </div>
+    {% empty %}
+    <p style="padding-left: 20px;">Товаров по вашему запросу не найдено.</p>
+    {% endfor %}
+</div>
+
+<a href="{% url 'hello_world' %}" style="margin: 20px; display: block;">← Назад на главную</a>
 
 </body>
 </html>
