@@ -69,6 +69,13 @@
 
 {% block scripts %}
 <script>
+function getCSRFToken() {
+  var meta = document.querySelector('meta[name="csrf-token"]');
+  if (meta) return meta.getAttribute('content');
+  var input = document.querySelector('[name=csrfmiddlewaretoken]');
+  return input ? input.value : '';
+}
+
 function showRegisterForm() {
   var section = document.getElementById('register-section');
   section.style.display = section.style.display === 'none' ? 'block' : 'none';
