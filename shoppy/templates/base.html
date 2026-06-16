@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Camping Project{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CAMPING PROJECT — FOREST THEME ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bark:    #2C1A0E;
+      --moss:    #3B5E3A;
+      --fern:    #5A8A58;
+      --meadow:  #8CB88A;
+      --mist:    #F0F4EF;
+      --pine:    #1E3A1D;
+      --amber:   #C8813A;
+      --leaf:    #D4EAD2;
+      --shadow:  rgba(44,26,14,0.12);
+      --radius:  10px;
+      --tr:      0.25s ease;
+    }
+
+    body {
+      font-family: 'Source Sans 3', Arial, sans-serif;
+      background-color: var(--mist);
+      color: var(--bark);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    /* NAV */
+    nav.site-nav {
+      background-color: var(--pine);
+      padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 62px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      position: sticky; top: 0; z-index: 100;
+    }
+    nav.site-nav .logo {
+      font-family: 'Playfair Display', serif;
+      color: var(--leaf); font-size: 21px;
+      text-decoration: none; letter-spacing: 0.5px;
+    }
+    nav.site-nav .logo span { color: var(--meadow); }
+    nav.site-nav .nav-links { display: flex; gap: 4px; align-items: center; }
+    nav.site-nav a.nav-link {
+      color: var(--meadow); text-decoration: none;
+      font-size: 15px; font-weight: 500;
+      padding: 8px 14px; border-radius: 6px;
+      transition: background var(--tr), color var(--tr);
+    }
+    nav.site-nav a.nav-link:hover { background: rgba(140,184,138,0.15); color: #fff; }
+    nav.site-nav a.nav-link.active { background: var(--fern); color: #fff; }
+    nav.site-nav a.cart-btn {
+      background: var(--amber); color: #fff;
+      text-decoration: none; font-weight: 600; font-size: 15px;
+      padding: 8px 16px; border-radius: 6px;
+      transition: background var(--tr);
+    }
+    nav.site-nav a.cart-btn:hover { background: #b5712e; }
+
+    /* MAIN */
+    main.content {
+      flex: 1; padding: 40px 32px;
+      max-width: 1200px; margin: 0 auto; width: 100%;
+    }
+
+    /* HERO */
+    .hero-banner {
+      background: linear-gradient(135deg, var(--pine) 0%, var(--moss) 65%, var(--fern) 100%);
+      border-radius: var(--radius);
+      padding: 64px 40px; text-align: center;
+      position: relative; overflow: hidden; margin-bottom: 40px;
+    }
+    .hero-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 15% 85%, rgba(212,234,210,0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 85% 15%, rgba(90,138,88,0.15) 0%, transparent 50%);
+    }
+    .hero-banner h1 {
+      font-family: 'Playfair Display', serif; font-size: 50px;
+      color: #fff; position: relative;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.35);
+    }
+    .hero-banner p {
+      color: var(--leaf); font-size: 18px; margin-top: 14px; position: relative;
+    }
+    .hero-banner .hero-actions { margin-top: 28px; position: relative; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* PAGE HEADING */
+    h1.page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px; color: var(--pine);
+      margin-bottom: 28px; padding-bottom: 12px;
+      border-bottom: 3px solid var(--meadow);
+    }
+
+    /* CARDS */
+    .card {
+      background: #fff;
+      border: 1px solid var(--leaf); border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 3px 10px var(--shadow);
+      transition: transform var(--tr), box-shadow var(--tr);
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 7px 22px var(--shadow); }
+
+    /* PRODUCT GRID */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
+    }
+    .product-card { display: flex; flex-direction: column; }
+    .product-card .card-img {
+      width: calc(100% + 40px); height: 185px;
+      object-fit: cover; border-radius: 8px 8px 0 0;
+      margin: -20px -20px 16px; display: block;
+    }
+    .product-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; color: var(--pine); margin-bottom: 8px;
+    }
+    .price { color: var(--amber); font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .stock-ok  { font-size: 13px; color: var(--fern); margin-bottom: 14px; }
+    .stock-out { font-size: 13px; color: #c0392b; font-weight: 600; margin-bottom: 14px; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-block; padding: 10px 22px; border-radius: 7px;
+      font-size: 15px; font-weight: 600; font-family: inherit;
+      cursor: pointer; text-decoration: none; border: none;
+      transition: background var(--tr), transform var(--tr); text-align: center;
+    }
+    .btn-primary  { background: var(--moss); color: #fff; }
+    .btn-primary:hover  { background: var(--fern); transform: translateY(-1px); }
+    .btn-amber   { background: var(--amber); color: #fff; }
+    .btn-amber:hover   { background: #b5712e; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent; color: var(--moss);
+      border: 2px solid var(--moss);
+    }
+    .btn-outline:hover { background: var(--moss); color: #fff; }
+    .btn-danger  { background: #c0392b; color: #fff; }
+    .btn-danger:hover  { background: #a93226; }
+    .btn-disabled {
+      background: #d0d0d0; color: #888;
+      cursor: not-allowed; pointer-events: none;
+    }
+
+    /* FILTERS */
+    .filters-bar {
+      background: #fff; border: 1px solid var(--leaf);
+      border-radius: var(--radius); padding: 16px 22px;
+      margin-bottom: 28px; display: flex; gap: 12px;
+      align-items: center; flex-wrap: wrap;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+    .filters-bar input, .filters-bar select {
+      padding: 9px 13px; border: 1.5px solid var(--meadow);
+      border-radius: 6px; font-size: 14px; font-family: inherit;
+      background: var(--mist); color: var(--bark);
+      transition: border-color var(--tr);
+    }
+    .filters-bar input:focus, .filters-bar select:focus {
+      outline: none; border-color: var(--fern);
+    }
+
+    /* TABLE */
+    table.styled-table { width: 100%; border-collapse: collapse; }
+    table.styled-table thead tr { background: var(--pine); color: var(--leaf); }
+    table.styled-table th { padding: 13px 16px; text-align: left; font-weight: 600; font-size: 14px; }
+    table.styled-table td { padding: 12px 16px; border-bottom: 1px solid var(--leaf); font-size: 15px; vertical-align: middle; }
+    table.styled-table tbody tr:hover { background: var(--mist); }
+    table.styled-table th:last-child, table.styled-table td:last-child { text-align: center; }
+
+    /* FORMS */
+    .form-box {
+      background: #fff; border: 1px solid var(--leaf);
+      border-radius: var(--radius); padding: 32px 36px;
+      box-shadow: 0 4px 16px var(--shadow);
+    }
+    .form-box h2 {
+      font-family: 'Playfair Display', serif;
+      color: var(--pine); font-size: 26px; margin-bottom: 24px;
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-weight: 600; font-size: 14px;
+      color: var(--moss); margin-bottom: 6px;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 10px 13px;
+      border: 1.5px solid var(--meadow); border-radius: 6px;
+      font-size: 15px; font-family: inherit; color: var(--bark);
+      background: var(--mist); transition: border-color var(--tr);
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none; border-color: var(--fern); background: #fff;
+    }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+
+    /* ALERTS */
+    .alert { padding: 13px 18px; border-radius: 7px; margin-bottom: 20px; font-weight: 500; }
+    .alert-success { background: var(--leaf); color: var(--pine); border-left: 4px solid var(--fern); }
+    .alert-error   { background: #fde8e7; color: #7b1a14; border-left: 4px solid #c0392b; }
+    .alert-info    { background: #e8f4f8; color: #1a5c7b; border-left: 4px solid #2980b9; }
+
+    /* BACK LINK */
+    a.back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--fern); text-decoration: none;
+      font-weight: 600; font-size: 15px; margin-bottom: 24px;
+      transition: color var(--tr);
+    }
+    a.back-link:hover { color: var(--pine); }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--moss); }
+    .empty-state .icon { font-size: 56px; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 22px; margin-bottom: 8px; }
+    .empty-state p { color: var(--fern); font-size: 15px; margin-top: 6px; }
+
+    /* PRODUCT DETAIL */
+    .product-detail { display: flex; gap: 40px; }
+    .product-detail .product-img { flex: 1; }
+    .product-detail .product-img img { width: 100%; border-radius: var(--radius); box-shadow: 0 4px 16px var(--shadow); }
+    .product-detail .product-meta { flex: 1; }
+    .product-detail .product-meta h1 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--pine); margin-bottom: 16px; }
+    .product-detail .meta-row { display: flex; gap: 8px; margin-bottom: 10px; font-size: 15px; }
+    .product-detail .meta-row strong { color: var(--moss); min-width: 110px; }
+    .product-detail .big-price { font-size: 30px; font-weight: 700; color: var(--amber); margin: 16px 0; }
+    .product-detail .description-block { background: var(--mist); border-radius: 7px; padding: 16px; margin: 16px 0; }
+    .product-detail .description-block h3 { color: var(--pine); margin-bottom: 8px; font-size: 16px; }
+
+    /* CART SUMMARY BOX */
+    .cart-summary {
+      background: var(--mist); border: 1px solid var(--leaf);
+      border-radius: var(--radius); padding: 24px 28px;
+      margin-top: 28px; text-align: right;
+    }
+    .cart-summary h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--pine); margin-bottom: 18px; }
+    .cart-summary .cart-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+
+    /* CHECKOUT */
+    .checkout-grid { display: grid; grid-template-columns: 1fr 360px; gap: 32px; align-items: start; }
+    .order-summary-box {
+      background: #fff; border: 1px solid var(--leaf);
+      border-radius: var(--radius); padding: 24px;
+      box-shadow: 0 3px 10px var(--shadow);
+    }
+    .order-summary-box h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--pine); margin-bottom: 16px; border-bottom: 2px solid var(--leaf); padding-bottom: 10px; }
+    .order-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--mist); font-size: 14px; }
+    .order-total { display: flex; justify-content: space-between; margin-top: 14px; font-weight: 700; font-size: 18px; color: var(--pine); }
+
+    /* ABOUT PAGE */
+    .about-card {
+      max-width: 620px; margin: 0 auto;
+      background: #fff; border: 1px solid var(--leaf);
+      border-radius: 16px; padding: 48px 40px; text-align: center;
+      box-shadow: 0 6px 24px var(--shadow);
+    }
+    .about-card .author-avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--moss), var(--fern));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; margin: 0 auto 24px;
+    }
+    .about-card h1 { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--pine); margin-bottom: 6px; }
+    .about-card .subtitle { color: var(--fern); font-size: 15px; margin-bottom: 28px; }
+    .about-card .info-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid var(--mist);
+      font-size: 15px; text-align: left;
+    }
+    .about-card .info-row:last-of-type { border-bottom: none; }
+    .about-card .info-row .icon { font-size: 22px; min-width: 30px; text-align: center; }
+
+    /* FOOTER */
+    footer.site-footer {
+      background: var(--pine); color: var(--meadow);
+      text-align: center; padding: 20px; font-size: 14px; margin-top: auto;
+    }
+
+    /* QTY INPUT IN CART */
+    .qty-form { display: flex; align-items: center; gap: 6px; }
+    .qty-form input[type=number] {
+      width: 58px; padding: 7px 8px; border: 1.5px solid var(--meadow);
+      border-radius: 5px; font-size: 14px; text-align: center;
+    }
+    .qty-form button {
+      background: var(--fern); color: #fff; border: none;
+      border-radius: 5px; padding: 7px 10px; cursor: pointer;
+      font-size: 14px; transition: background var(--tr);
+    }
+    .qty-form button:hover { background: var(--pine); }
+
+    @media (max-width: 768px) {
+      main.content { padding: 24px 16px; }
+      nav.site-nav { padding: 0 16px; }
+      .hero-banner h1 { font-size: 34px; }
+      .product-detail { flex-direction: column; }
+      .checkout-grid { grid-template-columns: 1fr; }
+      .cart-summary .cart-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="{% url 'hello_world' %}" class="logo">🌲 <span>Camping</span> Project</a>
+  <div class="nav-links">
+    <a href="{% url 'hello_world' %}" class="nav-link">Главная</a>
+    <a href="{% url 'catalog' %}" class="nav-link">Магазин</a>
+    <a href="{% url 'authors' %}" class="nav-link">Автор</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'cart_detail' %}" class="cart-btn">🛒 Корзина</a>
+    {% else %}
+      <a href="{% url 'login' %}" class="nav-link active">Войти</a>
+    {% endif %}
+  </div>
+</nav>
+
+<main class="content">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  © 2026 Camping Project — снаряжение для леса и природы
+</footer>
+
+</body>
+</html>

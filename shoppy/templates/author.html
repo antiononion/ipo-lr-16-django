@@ -1,62 +1,37 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Автор проекта</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
+{% block title %}Автор — Camping Project{% endblock %}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #4e7d67, #8fc9a3);
-            color: white;
-            text-align: center;
-        }
+{% block content %}
+<a href="{% url 'hello_world' %}" class="back-link">← Назад на главную</a>
 
-        .container {
-            padding: 60px 20px;
-        }
+<div class="about-card">
+  <div class="author-avatar">( ͡❛ ͜ʖ͡❛ )</div>
+  <h1>Милашевский Антон</h1>
+  <p class="subtitle">Разработчик Camping Project</p>
 
-        h1 {
-            font-size: 40px;
-            margin-bottom: 20px;
-        }
+  <div class="info-row">
+    <span class="icon">🏫</span>
+    <div><strong>Учебное заведение:</strong> МГКЦТ</div>
+  </div>
+  <div class="info-row">
+    <span class="icon">👥</span>
+    <div><strong>Группа:</strong> 88ТП</div>
+  </div>
+  <div class="info-row">
+    <span class="icon">💻</span>
+    <div><strong>Интересы:</strong> Программирование, ИПО, Django</div>
+  </div>
+  <div class="info-row">
+    <span class="icon">🌲</span>
+    <div><strong>Проект:</strong> Camping Project — интернет-магазин снаряжения для природы</div>
+  </div>
+  <div class="info-row">
+    <span class="icon">🚀</span>
+    <div>Активно изучает веб-разработку и создаёт собственные проекты в сфере IT</div>
+  </div>
 
-        p {
-            font-size: 18px;
-            max-width: 600px;
-            margin: 10px auto;
-            line-height: 1.6;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 10px 20px;
-            background: white;
-            color: #4e7d67;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-
-        a:hover {
-            background: #e6e6e6;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>Об авторе</h1>
-
-    <p><strong>Милашевский Антон</strong> — студент МГКЦТ.</p>
-    <p>Обучается в группе <strong>88ТП</strong>.</p>
-    <p>Интересуется программированием и активно изучает ИПО и Django.</p>
-    <p>Любит развиваться в сфере IT и создавать собственные проекты.</p>
-    <a href="..">Назад на главную</a>
+  <div style="margin-top: 28px;">
+    <a href="{% url 'catalog' %}" class="btn btn-primary">Перейти в магазин</a>
+  </div>
 </div>
-
-</body>
-</html>
+{% endblock %}

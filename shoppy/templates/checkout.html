@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Оформление заказа — Camping Project{% endblock %}
+
+{% block content %}
+<a href="{% url 'cart_detail' %}" class="back-link">← Вернуться в корзину</a>
+<h1 class="page-title">📦 Оформление заказа</h1>
+
+<div class="checkout-grid">
+
+  <!-- ФОРМА ОФОРМЛЕНИЯ -->
+  <div class="form-box">
+    <h2>Данные доставки</h2>
+    <form method="post" action="{% url 'checkout' %}">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="full_name">Полное имя</label>
+        <input type="text" id="full_name" name="full_name"
+               placeholder="Иван Иванов"
+               value="{{ user.get_full_name }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email для получения чека</label>
+        <input type="email" id="email" name="email"
+               placeholder="email@example.com"
+               value="{{ user.email }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Телефон</label>
+        <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__">
+      </div>
+
+      <div class="form-group">
+        <label for="address">Адрес доставки</label>
+        <textarea id="address" name="address" rows="3"
+                  placeholder="Город, улица, дом, квартира" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="comment">Комментарий к заказу (необязательно)</label>
+        <textarea id="comment" name="comment" rows="2"
+                  placeholder="Пожелания по доставке..."></textarea>
+      </div>
+
+      <div style="margin-top:8px; padding:14px; background:var(--leaf); border-radius:7px; font-size:14px; color:var(--pine);">
+        🌲 После оформления заказа наши специалисты свяжутся с вами для уточнения деталей доставки снаряжения.
+      </div>
+
+      <div style="margin-top:8px; padding:14px; background:var(--leaf); border-radius:7px; font-size:14px; color:var(--pine);">
+        📧 Чек в формате Excel будет отправлен на указанный email
+      </div>
+
+      <div style="margin-top:20px;">
+        <button type="submit" class="btn btn-amber" style="width:100%; font-size:16px; padding:14px;">
+          ✅ Подтвердить заказ
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- СВОДКА ЗАКАЗА -->
+  <div class="order-summary-box">
+    <h3>🧾 Ваш заказ</h3>
+    {% for item in elements %}
+    <div class="order-item">
+      <span>{{ item.product.title }} × {{ item.number }}</span>
+      <span style="font-weight:600; color:var(--amber);">{{ item.cost }} ₽</span>
+    </div>
+    {% endfor %}
+    <div class="order-total">
+      <span>Итого</span>
+      <span style="color:var(--amber);">{{ total_price }} ₽</span>
+    </div>
+    <div style="margin-top:16px; padding:12px; background:var(--mist); border-radius:7px; font-size:13px; color:var(--fern);">
+      🚚 Доставка рассчитывается после подтверждения заказа
+    </div>
+  </div>
+
+</div>
+{% endblock %}

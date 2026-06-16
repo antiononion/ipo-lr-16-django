@@ -1,76 +1,44 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Camping Project</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
+{% block title %}Camping Project — Главная{% endblock %}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #3e6b57, #7fb685);
-            color: white;
-            text-align: center;
-        }
-
-        header {
-            padding: 40px 20px;
-        }
-
-        h1 {
-            font-size: 42px;
-            margin-bottom: 10px;
-        }
-
-        .links {
-            margin-top: 40px;
-        }
-
-        .link-btn {
-            display: inline-block;
-            padding: 12px 25px;
-            margin: 10px;
-            font-size: 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            background-color: white;
-            color: #3e6b57;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .link-btn:hover {
-            background-color: #e6e6e6;
-        }
-
-        footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            padding: 15px;
-            background-color: rgba(0,0,0,0.2);
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>🌲 Camping Project</h1>
-    <p>Главная страница</p>
-</header>
-
-<div class="links">
-    <!-- Вставь свой путь внутрь href -->
-    <a href="author/" class="link-btn">Автор</a>
-
-    <!-- Вставь свой путь внутрь href -->
-    <a href="catalog/" class="link-btn">Магазин</a>
+{% block content %}
+<div class="hero-banner">
+  <h1>🌲 Camping Project</h1>
+  <p>Всё для походов, леса и дикой природы — в одном магазине</p>
+  <div class="hero-actions">
+    <a href="{% url 'catalog' %}" class="btn btn-amber">Перейти в магазин</a>
+    <a href="{% url 'authors' %}" class="btn btn-outline" style="color:#fff; border-color:#fff;">Об авторе</a>
+  </div>
 </div>
 
-<footer>
-    © 2026 Camping Project
-</footer>
+<div style="text-align:center; margin: 0 0 36px; padding: 0 20px;">
+  <p style="font-size:16px; color:var(--fern); line-height:1.8; max-width:680px; margin:0 auto;">
+    Camping Project — это магазин для тех, кто любит природу. Мы подбираем снаряжение для 
+    однодневных прогулок и многодневных экспедиций: палатки, спальники, горелки, навигация, 
+    одежда и аксессуары. Всё, что нужно, чтобы лес стал домом.
+  </p>
+</div>
 
-</body>
-</html>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 8px;">
+  <div class="card" style="text-align:center; padding: 32px 24px;">
+    <div style="font-size:44px; margin-bottom:14px;">🏕️</div>
+    <h3 style="font-family:'Playfair Display',serif; color:var(--pine); margin-bottom:8px;">Палатки и укрытия</h3>
+    <p style="color:var(--fern); font-size:14px;">Надёжная защита от непогоды в самых суровых условиях</p>
+  </div>
+  <div class="card" style="text-align:center; padding: 32px 24px;">
+    <div style="font-size:44px; margin-bottom:14px;">🔦</div>
+    <h3 style="font-family:'Playfair Display',serif; color:var(--pine); margin-bottom:8px;">Освещение</h3>
+    <p style="color:var(--fern); font-size:14px;">Фонари, налобники и фонари на солнечных батареях</p>
+  </div>
+  <div class="card" style="text-align:center; padding: 32px 24px;">
+    <div style="font-size:44px; margin-bottom:14px;">🎒</div>
+    <h3 style="font-family:'Playfair Display',serif; color:var(--pine); margin-bottom:8px;">Рюкзаки</h3>
+    <p style="color:var(--fern); font-size:14px;">Удобные и вместительные рюкзаки для любого маршрута</p>
+  </div>
+  <div class="card" style="text-align:center; padding: 32px 24px;">
+    <div style="font-size:44px; margin-bottom:14px;">🍳</div>
+    <h3 style="font-family:'Playfair Display',serif; color:var(--pine); margin-bottom:8px;">Приготовление пищи</h3>
+    <p style="color:var(--fern); font-size:14px;">Горелки, котелки и посуда для готовки на природе</p>
+  </div>
+</div>
+{% endblock %}

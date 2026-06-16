@@ -1,50 +1,69 @@
-<h1>Ваша корзина</h1>
+{% extends "base.html" %}
+{% block title %}Корзина — Camping Project{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🛒 Ваша корзина</h1>
 
 {% if elements %}
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr style="border-bottom: 2px solid #ccc;">
-                <th>Товар</th>
-                <th>Количество</th>
-                <th>Цена за шт.</th>
-                <th>Итого</th>
-                <th>Действие</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in elements %}
-            <tr style="border-bottom: 1px solid #eee; text-align: center;">
-                <td>{{ item.product.title }}</td>
-                
-                <td>
-                    <!-- Форма обновления количества -->
-                    <form action="{% url 'cart_update' item.id %}" method="post">
-                        {% csrf_token %}
-                        <input type="number" name="number" value="{{ item.number }}" min="1" 
-                               max="{{ item.product.numberOF }}" style="width: 50px;">
-                        <button type="submit" title="Обновить">🔄</button>
-                    </form>
-                </td>
-                
-                <td>{{ item.product.price }} руб.</td>
-                <td>{{ item.cost }} руб.</td> <!-- Твой метод cost из модели -->
-                
-                <td>
-                    <a href="{% url 'cart_remove' item.id %}" 
-                       onclick="return confirm('Удалить товар?')" 
-                       style="color: red; text-decoration: none;">❌ Удалить</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="card" style="padding:0; overflow:hidden;">
+  <table class="styled-table">
+    <thead>
+      <tr>
+        <th>Товар</th>
+        <th>Цена за шт.</th>
+        <th style="text-align:center;">Количество</th>
+        <th style="text-align:right;">Итого</th>
+        <th style="text-align:center;">Удалить</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in elements %}
+      <tr>
+        <td>
+          <a href="{% url 'product_info' pk=item.product.pk %}" style="color:var(--pine); font-weight:600; text-decoration:none;">
+            {{ item.product.title }}
+          </a>
+        </td>
+        <td style="color:var(--amber); font-weight:600;">{{ item.product.price }} ₽</td>
+        <td style="text-align:center;">
+          <form action="{% url 'cart_update' item.id %}" method="post" class="qty-form" style="justify-content:center;">
+            {% csrf_token %}
+            <input type="number" name="number" value="{{ item.number }}" min="1" max="{{ item.product.numberOF }}">
+            <button type="submit" title="Обновить">↺</button>
+          </form>
+        </td>
+        <td style="text-align:right; font-weight:700; color:var(--pine);">{{ item.cost }} ₽</td>
+        <td style="text-align:center;">
+          <a href="{% url 'cart_remove' item.id %}"
+             onclick="return confirm('Удалить товар из корзины?')"
+             class="btn btn-danger" style="padding:6px 14px; font-size:13px;">
+            ✕
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-    <div style="margin-top: 20px; text-align: right;">
-        <h2>Общая сумма: {{ total_price }} руб.</h2>
-        <a href="{% url 'catalog' %}" class="btn">Продолжить покупки</a>
-        <button class="btn" style="background: #007bff;">Оформить заказ</button>
-    </div>
+<div class="cart-summary">
+  <h2>Итого: <span style="color:var(--amber);">{{ total_price }} ₽</span></h2>
+  <div class="cart-actions">
+    <a href="{% url 'catalog' %}" class="btn btn-outline">← Продолжить покупки</a>
+    <a href="{% url 'checkout' %}" class="btn btn-amber" style="font-size:16px; padding:12px 30px;">
+      📦 Оформить заказ
+    </a>
+  </div>
+</div>
 
 {% else %}
-    <p>Корзина пуста. <a href="{% url 'catalog' %}">Перейти в каталог</a></p>
+<div class="empty-state">
+  <div class="icon">🛒</div>
+  <h3>Корзина пуста</h3>
+  <p>Добавьте товары из нашего каталога</p>
+  <div style="margin-top:24px;">
+    <a href="{% url 'catalog' %}" class="btn btn-primary">Перейти в каталог</a>
+  </div>
+</div>
 {% endif %}
+{% endblock %}

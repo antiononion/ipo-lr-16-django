@@ -1,18 +1,71 @@
-   1. CRUD: Это 4 базовые операции с данными: Create (.create()), Read (.get(), .filter()), Update (.save()), Delete (.delete()).<br>
-   2. URL-маршруты: Настраиваются в файле urls.py с помощью функции path('url/', views.my_view, name='name').<br>
-   3. Список с фильтрацией: Используется Product.objects.filter(category=...) в представлении (View), данные передаются в контекст шаблона.<br>
-   4. Q-объекты: Позволяют строить сложные запросы с условиями ИЛИ и НЕ. Пример: Product.objects.filter(Q(name__icontains='apple') | Q(description__icontains='apple')).<br>
-   5. Шаблоны: Создаются HTML-файлы в папке templates. Данные выводятся через теги {{ variable }} и циклы {% for item in list %}.<br>
-   6. Доступ к корзине: Применяется декоратор @login_required к функции-представлению или миксин LoginRequiredMixin к классу.<br>
-   7. Добавление с проверкой: Перед сохранением CartItem проверяется условие: if product.stock >= requested_quantity:.<br>
-   8. Обновление количества: Через POST-запрос из формы, где вызывается CartItem.objects.filter(...).update(quantity=new_value).<br>
-   9. Удаление из корзины: Находится нужный объект и вызывается метод: CartItem.objects.get(id=item_id).delete().<br>
-   10. Общая стоимость: Вычисляется через агрегацию или цикл: sum(item.product.price * item.quantity for item in cart.items.all()).<br>
-   11. Обработка ошибок: Используется конструкция try-except Product.DoesNotExist или функция-ярлык get_object_or_404(Product, id=id).<br>
-   12. Интерфейс администратора: Модели регистрируются в admin.py через admin.site.register(ModelName), после чего CRUD доступен в панели /admin.<br>
-   13. @login_required: Это декоратор, который перенаправляет неавторизованного пользователя на страницу логина, если он пытается открыть защищенный URL.<br>
-   14. Пагинация: Реализуется встроенным классом Paginator из django.core.paginator, который разбивает QuerySet на страницы.<br>
-   15. Связи моделей: Используется ForeignKey. Cart привязывается к User, а CartItem — к Cart и к Product.<br>
+1. URL-маршруты для checkout
+pythonpath('checkout/', views.checkout, name='checkout'),
+2. Представление для оформления заказа
+python@login_required
+def checkout(request):
+    if request.method == 'POST':
+        # обработка формы
+    return render(request, 'checkout.html')
+3. Создание заказа из корзины
+pythoncart = Cart.objects.get(user=request.user)
+elements = Element.objects.filter(cart=cart)
+4. Генерация Excel-чека
+pythonimport openpyxl, io
+wb = openpyxl.Workbook()
+ws = wb.active
+ws['A1'] = 'Товар'
+buf = io.BytesIO()
+wb.save(buf)
+5. Отправка email с чеком
+pythonmail = EmailMessage(subject=..., body=..., to=[email])
+mail.attach('receipt.xlsx', excel_bytes, 'application/vnd.ms-excel')
+mail.send()
+6. Очистка корзины
+pythonElement.objects.filter(cart=cart).delete()
+7. Настройка email в settings.py
+pythonEMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'email@gmail.com'
+EMAIL_HOST_PASSWORD = 'пароль_приложения'
+8. Django send_mail
+pythonfrom django.core.mail import send_mail
+send_mail('Тема', 'Текст', 'от@gmail.com', ['кому@gmail.com'])
+9. Проверка функционала
 
+Добавить товар в корзину → перейти на /checkout/ → заполнить форму → подтвердить → проверить email и что корзина очистилась.
+10. Обработка ошибок
+pythontry:
+    # отправка email
+except Exception as e:
+    messages.warning(request, f'Ошибка: {e}')
+11. Связь заказа с пользователем
+pythoncart = Cart.objects.get(user=request.user)
+element = Element(cart=cart, product=product, number=1)
+12. Форма оформления заказа
+html<form method="post">
+  {% csrf_token %}
+  <input name="full_name"> 
+  <input name="email">
+  <input name="address">
+  <button type="submit">Подтвердить</button>
+</form>
+13. Декоратор @login_required
+pythonfrom django.contrib.auth.decorators import login_required
 
+@login_required  # перенаправит на /login/ если не авторизован
+def checkout(request):
+    ...
+14. Отправка email в Django
 
+Настроить SMTP в settings.py, использовать EmailMessage или send_mail из django.core.mail.
+15. Шаблон checkout.html
+html{% extends "base.html" %}
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    <!-- поля формы -->
+  </form>
+  <!-- сводка заказа -->
+{% endblock %}
