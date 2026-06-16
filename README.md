@@ -1,114 +1,63 @@
-1. Статические файлы в Django
-CSS, JS, изображения — всё что не меняется динамически. Используются для оформления сайта.
+1. Аутентификация vs Авторизация
 
-2. Настройка STATIC в settings.py
-```python
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-```
+Аутентификация — кто ты? (логин/пароль)
+Авторизация — что тебе можно? (права доступа)
 
-3. Тег подключения статических файлов
-```html
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-```
+2. 401 vs 403
 
-4. Наследование шаблонов
-```html
-<!-- base.html -->
-{% block content %}{% endblock %}
+401 — не авторизован (не залогинен)
+403 — доступ запрещён (залогинен, но нет прав)
 
-<!-- child.html -->
-{% extends "base.html" %}
-{% block content %}текст{% endblock %}
-```
+3. Способы аутентификации в Django/DRF
 
-5. Подключение Bootstrap 5
-```html
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-```
+Session (по умолчанию в Django)
+Token (DRF)
+JWT (djangorestframework-simplejwt)
+Basic Auth (логин+пароль в заголовке)
 
-6. Bootstrap Grid — 12 колонок
-```html
-<div class="row">
-  <div class="col-6">половина</div>
-  <div class="col-6">половина</div>
-</div>
-```
-Сумма колонок в строке = 12.
+4. JWT и его состав
 
-7. Адаптивные карточки товаров
-```html
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  <div class="col">
-    <div class="card h-100">...</div>
-  </div>
-</div>
-```
+JSON Web Token — токен из трёх частей:
 
-8. Fetch API vs XMLHttpRequest
-Fetch — современный, основан на Promise, код чище. XMLHttpRequest — старый, колбэки, многословный.
+Header (алгоритм)
+Payload (данные пользователя)
+Signature (подпись)
 
-9. GET-запрос через Fetch
-```javascript
-fetch('/api/products/')
-  .then(res => res.json())
-  .then(data => console.log(data))
-```
+Разделены точками: xxxxx.yyyyy.zzzzz
+5. CSRF
 
-10. CSRF-токен в POST-запросе
-```javascript
-fetch('/api/order/', {
-  method: 'POST',
-  headers: {
-    'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)[1],
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({data: 'value'})
-})
-```
+Защита от межсайтовых запросов. При session auth браузер автоматически шлёт куки — злоумышленник может этим воспользоваться. CSRF-токен подтверждает что запрос идёт с твоего сайта.
+6. Инструменты прав в Django
 
-11. Динамическое создание HTML из API
-```javascript
-fetch('/api/products/')
-  .then(res => res.json())
-  .then(data => {
-    data.forEach(p => {
-      document.getElementById('list').innerHTML += `<div>${p.title}</div>`
-    })
-  })
-```
+is_staff — доступ к админке
+is_superuser — все права
+Permissions — права на конкретные действия (add, change, delete)
+Groups — группы с набором прав
 
-12. Адаптивная вёрстка и медиа-запросы Bootstrap
-- `col-sm-` — от 576px
-- `col-md-` — от 768px
-- `col-lg-` — от 992px
-- `col-xl-` — от 1200px
+7. Permissions в DRF
+python# глобально в settings.py
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated']
+}
 
-13. Пагинация через Paginator
-```python
-from django.core.paginator import Paginator
-paginator = Paginator(products, 10)  # 10 на страницу
-page = paginator.get_page(request.GET.get('page'))
-```
+# или на конкретном ViewSet
+class ProductViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+8. Пользователь видит только свои записи
+pythondef get_queryset(self):
+    return Order.objects.filter(user=self.request.user)
+9. Безопасное хранение токена
 
-14. Спиннер загрузки
-```javascript
-document.getElementById('spinner').style.display = 'block'
-fetch('/api/products/')
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById('spinner').style.display = 'none'
-  })
-```
+JWT — хранить в httpOnly cookie (недоступен JS, защита от XSS)
+Не хранить в localStorage — уязвим к XSS
+Session token Django хранит в куках автоматически
 
-15. Обработка ошибок Fetch
-```javascript
-fetch('/api/products/')
-  .then(res => {
-    if (!res.ok) throw new Error('Ошибка ' + res.status)
-    return res.json()
-  })
-  .catch(err => console.error(err))
-```
+10. Личный кабинет интернет-магазина
+
+Обязательные разделы:
+
+Профиль (имя, email, пароль)
+История заказов
+Текущие заказы / статус доставки
+Адреса доставки
+Корзина

@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет — Camping Project{% endblock %}
+
+{% block content %}
+<h1 class="page-title"><span style="color:var(--fern);font-weight:700;">/ \</span> Личный кабинет</h1>
+
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:28px; align-items:start;">
+  <div class="card" style="padding:28px;">
+    <h2 style="font-family:'Playfair Display',serif; color:var(--pine); margin-bottom:20px; font-size:22px;">Профиль</h2>
+
+    <div id="profile-info">
+      <div class="spinner-overlay active" id="profile-spinner" style="position:static; display:flex; min-height:100px;">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <button id="edit-profile-btn" class="btn btn-primary" style="display:none; margin-top:16px;">Редактировать</button>
+  </div>
+
+  <div class="card" style="padding:28px;">
+    <h2 style="font-family:'Playfair Display',serif; color:var(--pine); margin-bottom:20px; font-size:22px;">Роль</h2>
+    <div id="role-info">
+      <div class="spinner-overlay active" id="role-spinner" style="position:static; display:flex; min-height:60px;">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="edit-form-card" style="display:none; margin-top:28px; padding:28px;">
+  <h2 style="font-family:'Playfair Display',serif; color:var(--pine); margin-bottom:20px; font-size:22px;">Редактировать профиль</h2>
+  <form id="profile-form">
+    <div class="form-group">
+      <label for="full_name">Полное имя</label>
+      <input type="text" id="full_name" name="full_name" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="phone">Телефон</label>
+      <input type="text" id="phone" name="phone" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="address">Адрес доставки</label>
+      <textarea id="address" name="address" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="favorite_category">Любимая категория</label>
+      <select id="favorite_category" name="favorite_category" class="form-control">
+        <option value="">Не выбрана</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="hiking_experience">Опыт походов</label>
+      <select id="hiking_experience" name="hiking_experience" class="form-control">
+        <option value="beginner">Новичок</option>
+        <option value="intermediate">Средний</option>
+        <option value="advanced">Продвинутый</option>
+        <option value="expert">Эксперт</option>
+      </select>
+    </div>
+    <div style="display:flex; gap:12px; margin-top:20px;">
+      <button type="submit" class="btn btn-amber">Сохранить</button>
+      <button type="button" id="cancel-edit-btn" class="btn btn-outline">Отмена</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var profileInfo = document.getElementById('profile-info');
+  var roleInfo = document.getElementById('role-info');
+  var editBtn = document.getElementById('edit-profile-btn');
+  var editForm = document.getElementById('edit-form-card');
+  var cancelBtn = document.getElementById('cancel-edit-btn');
+  var profileForm = document.getElementById('profile-form');
+  var catSelect = document.getElementById('favorite_category');
+
+  function showError(container, msg) {
+    container.innerHTML = '<div class="alert alert-error">' + msg + '</div>';
+  }
+
+  function loadProfile() {
+    fetch('/api/me/')
+      .then(function(r) {
+        if (r.status === 401 || r.status === 403) {
+          profileInfo.innerHTML = '<div class="empty-state"><div class="icon" style="font-weight:700;font-size:32px;color:var(--amber);">[L]</div><h3>Войдите в аккаунт</h3><p>Чтобы увидеть профиль, <a href="{% url "login" %}" style="color:var(--fern);font-weight:600;">войдите</a></p></div>';
+          roleInfo.innerHTML = '';
+          editBtn.style.display = 'none';
+          throw new Error('Not authenticated');
+        }
+        return r.json();
+      })
+      .then(function(data) {
+        var p = data.profile || {};
+        profileInfo.innerHTML = ''
+          + '<div class="info-row" style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--leaf);">'
+          + '<strong style="min-width:120px;color:var(--moss);">Имя:</strong><span>' + (p.full_name || '—') + '</span></div>'
+          + '<div class="info-row" style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--leaf);">'
+          + '<strong style="min-width:120px;color:var(--moss);">Email:</strong><span>' + (data.email || '—') + '</span></div>'
+          + '<div class="info-row" style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--leaf);">'
+          + '<strong style="min-width:120px;color:var(--moss);">Телефон:</strong><span>' + (p.phone || '—') + '</span></div>'
+          + '<div class="info-row" style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--leaf);">'
+          + '<strong style="min-width:120px;color:var(--moss);">Адрес:</strong><span>' + (p.address || '—') + '</span></div>'
+          + '<div class="info-row" style="display:flex;gap:10px;padding:10px 0;">'
+          + '<strong style="min-width:120px;color:var(--moss);">Любимая категория:</strong><span>' + (p.favorite_category || '—') + '</span></div>';
+
+        var roleHtml = '';
+        if (data.is_staff) {
+          roleHtml = '<div style="text-align:center;padding:20px;"><div style="font-size:36px;margin-bottom:12px;font-weight:700;color:var(--amber);">[A]</div><h3 style="color:var(--pine);">Администратор</h3><p style="color:var(--fern);font-size:14px;">У вас есть права на управление товарами</p></div>';
+        } else {
+          roleHtml = '<div style="text-align:center;padding:20px;"><div style="font-size:36px;margin-bottom:12px;font-weight:700;color:var(--fern);">[+]</div><h3 style="color:var(--pine);">Покупатель</h3><p style="font-size:14px;color:var(--fern);">Базовая учётная запись</p></div>';
+        }
+        roleInfo.innerHTML = roleHtml;
+        editBtn.style.display = 'inline-block';
+
+        document.getElementById('full_name').value = p.full_name || '';
+        document.getElementById('phone').value = p.phone || '';
+        document.getElementById('address').value = p.address || '';
+        document.getElementById('hiking_experience').value = p.hiking_experience || 'beginner';
+      })
+      .catch(function(err) {
+        if (err.message === 'Not authenticated') return;
+        showError(profileInfo, 'Ошибка загрузки профиля');
+      });
+  }
+
+  function loadCategories() {
+    fetch('/api/categories/')
+      .then(function(r) { return r.json(); })
+      .then(function(cats) {
+        cats.forEach(function(c) {
+          var opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.title;
+          catSelect.appendChild(opt);
+        });
+      })
+      .catch(function() {});
+  }
+
+  editBtn.addEventListener('click', function() {
+    editForm.style.display = 'block';
+    editBtn.style.display = 'none';
+    profileInfo.style.display = 'none';
+  });
+
+  cancelBtn.addEventListener('click', function() {
+    editForm.style.display = 'none';
+    editBtn.style.display = 'inline-block';
+    profileInfo.style.display = 'block';
+  });
+
+  profileForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var data = {
+      profile: {
+        full_name: document.getElementById('full_name').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        favorite_category: document.getElementById('favorite_category').value || null,
+        hiking_experience: document.getElementById('hiking_experience').value,
+      }
+    };
+
+    showSpinner();
+    fetch('/api/me/', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      },
+      body: JSON.stringify(data)
+    })
+      .then(function(r) {
+        if (!r.ok) throw new Error('Ошибка сохранения');
+        return r.json();
+      })
+      .then(function() {
+        showToast('Профиль обновлён', 'success');
+        editForm.style.display = 'none';
+        editBtn.style.display = 'inline-block';
+        profileInfo.style.display = 'block';
+        loadProfile();
+      })
+      .catch(function() {
+        showToast('Ошибка при сохранении профиля', 'error');
+      })
+      .finally(function() { hideSpinner(); });
+  });
+
+  loadCategories();
+  loadProfile();
+});
+</script>
+{% endblock %}

@@ -2,7 +2,7 @@
 {% block title %}Корзина — Camping Project{% endblock %}
 
 {% block content %}
-<h1 class="page-title">🛒 Ваша корзина</h1>
+<h1 class="page-title"><span style="color:var(--amber);">[+]</span> Ваша корзина</h1>
 
 {% if elements %}
 <div class="card" style="padding:0; overflow:hidden;">
@@ -51,14 +51,14 @@
   <div class="cart-actions">
     <a href="{% url 'catalog' %}" class="btn btn-outline">← Продолжить покупки</a>
     <a href="{% url 'checkout' %}" class="btn btn-amber" style="font-size:16px; padding:12px 30px;">
-      📦 Оформить заказ
+      [B] Оформить заказ
     </a>
   </div>
 </div>
 
 {% else %}
 <div class="empty-state">
-  <div class="icon">🛒</div>
+  <div class="icon" style="font-size:32px; font-weight:700; color:var(--amber);">[+]</div>
   <h3>Корзина пуста</h3>
   <p>Добавьте товары из нашего каталога</p>
   <div style="margin-top:24px;">

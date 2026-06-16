@@ -23,15 +23,42 @@ function showToast(message, type) {
   toast.className = 'toast toast-' + type;
   toast.textContent = message;
   container.appendChild(toast);
-  setTimeout(() => { toast.remove(); }, 3500);
+  setTimeout(function() { toast.remove(); }, 3500);
+}
+
+function handleAuthError(response) {
+  if (response.status === 401) {
+    showToast('Требуется авторизация. Перенаправление...', 'error');
+    setTimeout(function() { window.location.href = '/login/'; }, 1500);
+    return true;
+  }
+  if (response.status === 403) {
+    showToast('Недостаточно прав для этого действия', 'error');
+    return true;
+  }
+  return false;
+}
+
+function apiFetch(url, options) {
+  options = options || {};
+  if (!options.headers) options.headers = {};
+  if (options.method && options.method !== 'GET') {
+    options.headers['X-CSRFToken'] = getCSRFToken();
+  }
+  return fetch(url, options).then(function(r) {
+    if (!r.ok) {
+      handleAuthError(r);
+      throw new Error('HTTP ' + r.status);
+    }
+    return r.json();
+  });
 }
 
 function loadProducts() {
   const container = document.getElementById('product-list');
   if (!container) return;
   showSpinner();
-  fetch('/api/products/')
-    .then(function(r) { return r.json(); })
+  apiFetch('/api/products/')
     .then(function(products) {
       container.innerHTML = '';
       if (!products.length) {
@@ -55,9 +82,8 @@ function loadProducts() {
         container.appendChild(card);
       });
     })
-    .catch(function(err) {
+    .catch(function() {
       container.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><h3>Ошибка загрузки</h3><p>Не удалось загрузить товары. Попробуйте позже.</p></div>';
-      showToast('Ошибка загрузки товаров', 'error');
     })
     .finally(function() { hideSpinner(); });
 }
@@ -73,13 +99,15 @@ function addToCart(productId) {
     body: JSON.stringify({ product: productId, number: 1 })
   })
     .then(function(r) {
+      if (r.status === 401 || r.status === 403) {
+        handleAuthError(r);
+        return;
+      }
       if (!r.ok) throw new Error('Ошибка сервера');
-      return r.json();
-    })
-    .then(function() {
       showToast('Товар добавлен в корзину!', 'success');
     })
     .catch(function(err) {
+      if (err.message === 'Not authenticated') return;
       showToast('Не удалось добавить товар: ' + err.message, 'error');
     })
     .finally(function() { hideSpinner(); });

@@ -10,12 +10,16 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 import io
 import datetime
 
-from rest_framework import viewsets
+from rest_framework import viewsets, generics, permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 from .models import Product, Element, Cart, Category, Owner
 from .serializers import (
     ProductSerializer, CategorySerializer, OwnerSerializer,
-    CartSerializer, CartItemSerializer,
+    CartSerializer, CartItemSerializer, UserSerializer,
+    RegisterSerializer, ProfileSerializer,
 )
+from .permissions import IsAdminOrReadOnly
 
 
 # ─────────────────────────────────────────────
@@ -171,7 +175,7 @@ def _generate_receipt_excel(order_info: dict, elements) -> bytes:
 
     # ── ЗАГОЛОВОК ──
     ws.merge_cells('A1:F1')
-    ws['A1'] = '🌲 CAMPING PROJECT — ЧЕК ЗАКАЗА'
+    ws['A1'] = '[#] CAMPING PROJECT — ЧЕК ЗАКАЗА'
     ws['A1'].font = Font(color='FFFFFF', bold=True, size=16)
     ws['A1'].fill = pine_fill
     ws['A1'].alignment = center
@@ -432,29 +436,56 @@ def product_list(request):
 
 
 # ─────────────────────────────────────────────
+#  ЛИЧНЫЙ КАБИНЕТ
+# ─────────────────────────────────────────────
+
+@login_required
+def profile_view(request):
+    return render(request, 'profile.html')
+
+
+# ─────────────────────────────────────────────
 #  API views (DRF)
 # ─────────────────────────────────────────────
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = Owner.objects.all()
     serializer_class = OwnerSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = Element.objects.all()
     serializer_class = CartItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class RegisterView(generics.CreateAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class MeView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

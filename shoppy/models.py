@@ -2,10 +2,49 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class CustomUser(AbstractUser):
     pass
+
+
+class Profile(models.Model):
+    HIKE_CHOICES = [
+        ('beginner', 'Новичок'),
+        ('intermediate', 'Средний'),
+        ('advanced', 'Продвинутый'),
+        ('expert', 'Эксперт'),
+    ]
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile',
+    )
+    full_name = models.CharField('Полное имя', max_length=150, blank=True)
+    phone = models.CharField('Телефон', max_length=20, blank=True)
+    address = models.TextField('Адрес доставки', blank=True)
+    favorite_category = models.ForeignKey(
+        'Category',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        verbose_name='Любимая категория',
+    )
+    hiking_experience = models.CharField(
+        'Опыт походов',
+        max_length=20,
+        choices=HIKE_CHOICES,
+        default='beginner',
+    )
+
+    def __str__(self):
+        return f'Профиль {self.user.username}'
+
+    class Meta:
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Профили'
 
 
 class Category(models.Model):
@@ -121,3 +160,9 @@ class Element(models.Model):
         verbose_name = 'Позиция корзины'
         verbose_name_plural = 'Позиции корзины'
         unique_together = ('cart', 'product')
+
+
+@receiver(post_save, sender=CustomUser)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)

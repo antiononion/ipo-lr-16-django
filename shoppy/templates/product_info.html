@@ -9,7 +9,7 @@
     {% if product.photo %}
       <img src="{{ product.photo.url }}" alt="{{ product.title }}">
     {% else %}
-      <div style="background:linear-gradient(135deg,var(--moss),var(--fern)); height:360px; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:80px;">🏕️</div>
+      <div style="background:linear-gradient(135deg,var(--moss),var(--fern)); height:360px; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:48px; font-weight:700; color:var(--leaf);">/ \</div>
     {% endif %}
   </div>
 
@@ -27,15 +27,15 @@
     </div>
 
     <div style="background:var(--leaf); border-left:4px solid var(--fern); border-radius:0 7px 7px 0; padding:12px 16px; margin:0 0 20px; font-size:14px; color:var(--pine); line-height:1.6;">
-      🌲 <strong>Совет туриста:</strong> Выбирайте снаряжение с запасом прочности — в походе 
+      <span style="color:var(--fern);font-weight:700;">[#]</span> <strong>Совет туриста:</strong> Выбирайте снаряжение с запасом прочности — в походе 
       каждая вещь должна служить долго и надёжно, даже в сложных условиях.
     </div>
 
     {% if product.numberOF > 0 %}
-      <p class="stock-ok" style="margin-bottom:20px;">✔ Осталось на складе: {{ product.numberOF }} шт.</p>
+      <p class="stock-ok" style="margin-bottom:20px;"><span style="color:var(--fern);">[v]</span> Осталось на складе: {{ product.numberOF }} шт.</p>
       {% if user.is_authenticated %}
         <a href="{% url 'cart_add' product_id=product.id %}" class="btn btn-amber" style="font-size:16px; padding:13px 32px;">
-          🛒 Добавить в корзину
+          [+] Добавить в корзину
         </a>
       {% else %}
         <p style="color:var(--fern); font-size:14px;">
@@ -43,7 +43,7 @@
         </p>
       {% endif %}
     {% else %}
-      <p class="stock-out" style="margin-bottom:16px;">✖ Нет в наличии</p>
+      <p class="stock-out" style="margin-bottom:16px;"><span style="color:#c0392b;">[x]</span> Нет в наличии</p>
       <button class="btn btn-disabled">Нет в наличии</button>
     {% endif %}
   </div>
