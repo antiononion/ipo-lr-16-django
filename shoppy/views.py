@@ -6,6 +6,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.conf import settings
 import openpyxl
+import traceback
+from rest_framework import status
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 import io
 import datetime
@@ -481,6 +483,15 @@ class CartItemViewSet(viewsets.ModelViewSet):
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            return Response(
+                {'error': str(e), 'traceback': traceback.format_exc()},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class MeView(generics.RetrieveUpdateAPIView):

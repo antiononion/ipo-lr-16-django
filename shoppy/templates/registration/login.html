@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
       body: JSON.stringify(data),
     })
       .then(function(r) {
-        if (!r.ok) return r.json().then(function(err) { throw new Error(err.username ? err.username[0] : 'Ошибка регистрации'); });
+        if (!r.ok) return r.json().then(function(err) { throw new Error(err.error || err.username ? err.username[0] : JSON.stringify(err)); });
         return r.json();
       })
       .then(function() {
