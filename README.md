@@ -1,4 +1,5 @@
 1. Шаблон страницы оформления заказа
+   
 html{% extends "base.html" %}
 {% block content %}
 <form method="post">
@@ -8,8 +9,10 @@ html{% extends "base.html" %}
 </form>
 {% endblock %}
 2. REST API и его принципы
+
 Архитектурный стиль для веб-сервисов. Принципы: stateless (без состояния), единый интерфейс (GET/POST/PUT/DELETE), клиент-сервер, кэшируемость.
 3. Установка Django REST Framework
+
 bashpip install djangorestframework
 python# settings.py
 INSTALLED_APPS = [..., 'rest_framework']
@@ -21,12 +24,14 @@ pythonclass ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 5. Представление ModelViewSet
+
 pythonfrom rest_framework.viewsets import ModelViewSet
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 6. URL-маршруты через DefaultRouter
+
 pythonfrom rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register('products', ProductViewSet)
@@ -35,6 +40,7 @@ urlpatterns = router.urls
 
 Создать запрос → указать URL (http://127.0.0.1:8000/api/products/) → выбрать метод (GET/POST/PUT/DELETE) → нажать Send → смотреть ответ.
 8. Аутентификация в DRF
+
 python# settings.py
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -52,11 +58,13 @@ DELETE /api/products/1/ — удалить
 
 ModelViewSet делает это автоматически.
 10. Связь сериализатора с моделью
+
 pythonclass ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product        # модель
         fields = ['id', 'title', 'price']  # поля
 11. Обработка ошибок в API
+
 pythonfrom rest_framework.response import Response
 from rest_framework import status
 
