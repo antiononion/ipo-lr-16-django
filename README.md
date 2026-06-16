@@ -8,7 +8,6 @@ html{% extends "base.html" %}
 </form>
 {% endblock %}
 2. REST API и его принципы
-
 Архитектурный стиль для веб-сервисов. Принципы: stateless (без состояния), единый интерфейс (GET/POST/PUT/DELETE), клиент-сервер, кэшируемость.
 3. Установка Django REST Framework
 bashpip install djangorestframework
