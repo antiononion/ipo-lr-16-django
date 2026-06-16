@@ -9,7 +9,12 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 import io
 import datetime
 
+from rest_framework import viewsets
 from .models import Product, Element, Cart, Category, Owner
+from .serializers import (
+    ProductSerializer, CategorySerializer, OwnerSerializer,
+    CartSerializer, CartItemSerializer,
+)
 
 
 # ─────────────────────────────────────────────
@@ -418,3 +423,32 @@ def product_list(request):
         'categories': categories,
         'owners':     owners,
     })
+
+
+# ─────────────────────────────────────────────
+#  API views (DRF)
+# ─────────────────────────────────────────────
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class OwnerViewSet(viewsets.ModelViewSet):
+    queryset = Owner.objects.all()
+    serializer_class = OwnerSerializer
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class CartViewSet(viewsets.ModelViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+
+
+class CartItemViewSet(viewsets.ModelViewSet):
+    queryset = Element.objects.all()
+    serializer_class = CartItemSerializer
