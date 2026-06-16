@@ -1,75 +1,114 @@
-1. Шаблон страницы оформления заказа
-   
-html{% extends "base.html" %}
-{% block content %}
-<form method="post">
-  {% csrf_token %}
-  <input name="address">
-  <button type="submit">Оформить</button>
-</form>
-{% endblock %}
-2. REST API и его принципы
+1. Статические файлы в Django
+CSS, JS, изображения — всё что не меняется динамически. Используются для оформления сайта.
 
-Архитектурный стиль для веб-сервисов. Принципы: stateless (без состояния), единый интерфейс (GET/POST/PUT/DELETE), клиент-сервер, кэшируемость.
-3. Установка Django REST Framework
+2. Настройка STATIC в settings.py
+```python
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+```
 
-bashpip install djangorestframework
-python# settings.py
-INSTALLED_APPS = [..., 'rest_framework']
-4. Сериализатор в DRF
+3. Тег подключения статических файлов
+```html
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+```
 
-Преобразует модели Django в JSON и обратно.
-pythonclass ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = '__all__'
-5. Представление ModelViewSet
+4. Наследование шаблонов
+```html
+<!-- base.html -->
+{% block content %}{% endblock %}
 
-pythonfrom rest_framework.viewsets import ModelViewSet
+<!-- child.html -->
+{% extends "base.html" %}
+{% block content %}текст{% endblock %}
+```
 
-class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-6. URL-маршруты через DefaultRouter
+5. Подключение Bootstrap 5
+```html
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+```
 
-pythonfrom rest_framework.routers import DefaultRouter
-router = DefaultRouter()
-router.register('products', ProductViewSet)
-urlpatterns = router.urls
-7. Тестирование в Postman
+6. Bootstrap Grid — 12 колонок
+```html
+<div class="row">
+  <div class="col-6">половина</div>
+  <div class="col-6">половина</div>
+</div>
+```
+Сумма колонок в строке = 12.
 
-Создать запрос → указать URL (http://127.0.0.1:8000/api/products/) → выбрать метод (GET/POST/PUT/DELETE) → нажать Send → смотреть ответ.
-8. Аутентификация в DRF
+7. Адаптивные карточки товаров
+```html
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  <div class="col">
+    <div class="card h-100">...</div>
+  </div>
+</div>
+```
 
-python# settings.py
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
-}
-9. Создание, обновление, удаление через API
+8. Fetch API vs XMLHttpRequest
+Fetch — современный, основан на Promise, код чище. XMLHttpRequest — старый, колбэки, многословный.
 
-POST /api/products/ — создать
-PUT /api/products/1/ — обновить
-DELETE /api/products/1/ — удалить
+9. GET-запрос через Fetch
+```javascript
+fetch('/api/products/')
+  .then(res => res.json())
+  .then(data => console.log(data))
+```
 
-ModelViewSet делает это автоматически.
-10. Связь сериализатора с моделью
+10. CSRF-токен в POST-запросе
+```javascript
+fetch('/api/order/', {
+  method: 'POST',
+  headers: {
+    'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)[1],
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({data: 'value'})
+})
+```
 
-pythonclass ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product        # модель
-        fields = ['id', 'title', 'price']  # поля
-11. Обработка ошибок в API
+11. Динамическое создание HTML из API
+```javascript
+fetch('/api/products/')
+  .then(res => res.json())
+  .then(data => {
+    data.forEach(p => {
+      document.getElementById('list').innerHTML += `<div>${p.title}</div>`
+    })
+  })
+```
 
-pythonfrom rest_framework.response import Response
-from rest_framework import status
+12. Адаптивная вёрстка и медиа-запросы Bootstrap
+- `col-sm-` — от 576px
+- `col-md-` — от 768px
+- `col-lg-` — от 992px
+- `col-xl-` — от 1200px
 
-def my_view(request):
-    try:
-        # логика
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+13. Пагинация через Paginator
+```python
+from django.core.paginator import Paginator
+paginator = Paginator(products, 10)  # 10 на страницу
+page = paginator.get_page(request.GET.get('page'))
+```
+
+14. Спиннер загрузки
+```javascript
+document.getElementById('spinner').style.display = 'block'
+fetch('/api/products/')
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('spinner').style.display = 'none'
+  })
+```
+
+15. Обработка ошибок Fetch
+```javascript
+fetch('/api/products/')
+  .then(res => {
+    if (!res.ok) throw new Error('Ошибка ' + res.status)
+    return res.json()
+  })
+  .catch(err => console.error(err))
+```

@@ -1,0 +1,112 @@
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+.pagination .step,
+.pagination .current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.pagination .step {
+  background: #fff;
+  color: var(--moss);
+  border: 1.5px solid var(--meadow);
+}
+.pagination .step:hover {
+  background: var(--moss);
+  color: #fff;
+  border-color: var(--moss);
+}
+.pagination .current {
+  background: var(--pine);
+  color: #fff;
+  border: 1.5px solid var(--pine);
+  cursor: default;
+}
+
+/* Spinner */
+.spinner-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 58, 29, 0.5);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+.spinner-overlay.active {
+  display: flex;
+}
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--leaf);
+  border-top-color: var(--fern);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Toast notifications */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast {
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  animation: slideIn 0.35s ease;
+  max-width: 360px;
+}
+.toast-success {
+  background: var(--leaf);
+  color: var(--pine);
+  border-left: 4px solid var(--fern);
+}
+.toast-error {
+  background: #fde8e7;
+  color: #7b1a14;
+  border-left: 4px solid #c0392b;
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Cart badge */
+.cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--amber);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  padding: 0 5px;
+  margin-left: 4px;
+}

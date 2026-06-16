@@ -1,12 +1,15 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token }}">
   <title>{% block title %}Camping Project{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <style>
     /* ===== CAMPING PROJECT — FOREST THEME ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -337,9 +340,17 @@
   {% block content %}{% endblock %}
 </main>
 
+<div id="spinner-overlay" class="spinner-overlay">
+  <div class="spinner"></div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
 <footer class="site-footer">
   © 2026 Camping Project — снаряжение для леса и природы
 </footer>
 
+{% block scripts %}{% endblock %}
+<script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>
